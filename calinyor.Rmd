@@ -1,0 +1,38 @@
+---
+title: "Belen's section"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+install.packages("dplyr")
+library(dplyr)
+library(tidyverse)
+#install.packages("tidytext")
+library(tidytext)
+#install.packages("ggwordcloud")
+library(ggwordcloud)
+install.packages("gutenbergr") 
+library(gutenbergr)
+#install.packages('textdata')
+library(textdata)
+install.packages("textreadr")
+library("textreadr")
+install.packages("striprtf")
+library(striprtf)
+save.image("tidytext.RData")
+
+```
+
+
+```{r}
+or <- read_lines("oregon.txt")
+
+orTib <- tibble(or)
+
+View(orTib)
+```
