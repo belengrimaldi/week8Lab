@@ -1,0 +1,107 @@
+---
+title: "Florida + DC Rmd"
+author: "Amanda Rein"
+date: "3/23/2020"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r}
+#install.packages("tidyverse")
+library(tidyverse)
+#install.packages("tidytext")
+library(tidytext)
+#install.packages("ggwordcloud")
+library(ggwordcloud)
+#install.packages("gutenbergr") 
+#library(gutenbergr)
+#install.packages('textdata')
+library(textdata)
+#setwd("/cloud/project/tidytext")
+#save.image("tidytext.RData")
+
+```
+
+```{r}
+
+florida <- read_lines("FloridaDataScience.txt")
+
+florida <- tibble(florida)
+View(florida)
+
+florida$florida <- as.character(florida$florida)
+
+View(florida)
+
+florida <- florida %>%
+  unnest_tokens(word, florida)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+View(florida)
+
+get_sentiments('afinn') 
+
+get_sentiments('nrc')
+
+get_sentiments('bing')
+
+florida_afinn <- florida %>%
+  inner_join(get_sentiments("afinn"))
+View(florida_afinn)
+
+florida_nrc <- florida %>%
+  inner_join(get_sentiments("nrc"))
+View(florida_nrc)
+
+florida_bing <- florida %>%
+  inner_join(get_sentiments("bing"))
+View(florida_bing)
+
+table(florida_afinn$value)
+table(florida_nrc$sentiment)
+table(florida_bing$sentiment)
+
+ggplot(data = florida_afinn, 
+       aes(x=value)) +
+  geom_histogram() +
+  ggtitle("Florida Sentiment Range (Afinn)") +
+  theme_minimal()
+
+ggplot(florida_nrc, 
+    aes(x = sentiment)) + 
+    ggtitle("Florida Sentiment Range (Nrc)") +
+    geom_bar() +
+    theme_minimal()
+
+ggplot(florida_bing, 
+    aes(x = sentiment)) + 
+    ggtitle("Florida Sentiment Range (Bing)") +
+    geom_bar() +
+    theme_minimal()
+
+set.seed(42)
+ggplot(florida_afinn[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() +
+  ggtitle("Florida Sentiment Range (Afinn)") +
+  theme_minimal()
+
+set.seed(42)
+ggplot(florida_nrc[1:50,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  ggtitle("Florida Sentiment Range (Nrc)")+
+  theme_minimal()
+
+set.seed(42)
+ggplot(florida_bing[1:50,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  ggtitle("Florida Sentiment Range (Bing)")+
+  theme_minimal()
+```
