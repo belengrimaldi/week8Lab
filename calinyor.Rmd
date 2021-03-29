@@ -1,24 +1,32 @@
 ---
-title: "Belen's section"
-output: html_document
+title: "Word Sentiment -- Belen"
+author: "Belen Gomez Grimaldi"
+date: "3/28/2021"
+output:
+  html_document:
+    toc: TRUE
+    theme: journal
+    toc_float: TRUE
+editor_options: 
+  chunk_output_type: console
 ---
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-```{r}
+```{r, echo=FALSE, message=FALSE}
 install.packages("dplyr")
 library(dplyr)
+install.packages("DT")
+library(DT)
 library(tidyverse)
-#install.packages("tidytext")
 library(tidytext)
-#install.packages("ggwordcloud")
 library(ggwordcloud)
 install.packages("gutenbergr") 
 library(gutenbergr)
-#install.packages('textdata')
 library(textdata)
 install.packages("textreadr")
 library("textreadr")
@@ -28,11 +36,200 @@ save.image("tidytext.RData")
 
 ```
 
+## Northeast Sentiment Analysis (centered on New York news)
+```{r, echo=FALSE, message=FALSE}
+# Read in the articles from the .txt file
+ny <- read_lines("ny.txt")
 
-```{r}
-or <- read_lines("oregon.txt")
+# Clean the data and make it usable
+ny <- tibble(ny)
 
-orTib <- tibble(or)
+ny <- tail(ny, -1098)
 
-View(orTib)
+ny <- ny[!apply(ny == "", 1, all),]
+ny <- ny[!(ny$ny=="Body"),]
+ny <- ny[!(ny$ny=="Link to Image"),]
+ny <- ny[!(ny$ny==" "),]
+ny <- ny[!(ny$ny=="End of Document"),]
+ny <- ny[!(ny$ny=="Page  of "),]
+ny <- ny[!grepl("Length", ny$ny),]
+ny <- ny[!grepl("Highlight", ny$ny),]
+ny <- ny[!grepl("Copyright", ny$ny),]
+ny <- ny[!grepl("Load-Date", ny$ny),]
+ny <- ny[!grepl("Section", ny$ny),]
+ny <- ny[!grepl("Byline", ny$ny),]
+ny <- ny[!grepl("PM EDT", ny$ny),]
+ny <- ny[!grepl("PM EST", ny$ny),]
+ny <- ny[!grepl("AM EST", ny$ny),]
+ny <- ny[!grepl("Graphic", ny$ny),]
+ny <- ny[!grepl("www", ny$ny),]
+
+# Save the cleaned data for a tf-idf analysis later
+cleaned_ny <- ny
+cleaned_ny$ny <- as.character(cleaned_ny$ny)
+
+ny$ny <- as.character(ny$ny)
+
+# Create a new table with count of individual words
+ny <- ny %>%
+  unnest_tokens(word, ny)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+# Do sentiment analyses for the NE region
+
+get_sentiments('afinn') 
+
+get_sentiments('nrc')
+
+get_sentiments('bing')
+
+ny_afinn <- ny %>%
+  inner_join(get_sentiments("afinn"))
+
+ny_nrc <- ny %>%
+  inner_join(get_sentiments("nrc"))
+
+ny_bing <- ny %>%
+  inner_join(get_sentiments("bing"))
+
+# Plot the results
+ggplot(data = ny_afinn, 
+       aes(x=value)) +
+  geom_histogram() +
+  ggtitle("New York Sentiment Range (Afinn)") +
+  theme_minimal()
+
+ggplot(ny_nrc, 
+    aes(x = sentiment)) + 
+    ggtitle("New York Sentiment Range (Nrc)") +
+    geom_bar() +
+    theme_minimal()
+
+ggplot(ny_bing, 
+    aes(x = sentiment)) + 
+    ggtitle("New York Sentiment Range (Bing)") +
+    geom_bar() +
+    theme_minimal()
+
+set.seed(42)
+ggplot(ny_afinn[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() +
+  ggtitle("New York Sentiment Range (Afinn)") +
+  theme_minimal()
+
+set.seed(42)
+ggplot(ny_nrc[1:50,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  ggtitle("New York Sentiment Range (Nrc)")+
+  theme_minimal()
+
+set.seed(42)
+ggplot(ny_bing[1:50,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  ggtitle("New York Sentiment Range (Bing)")+
+  theme_minimal()
+
+
+```
+
+
+## ny Coast Sentiment Analysis (analyzing California and Oregon news)
+```{r, echo=FALSE, message=FALSE}
+west <- read_lines("west.txt")
+
+
+west <- tibble(west)
+
+# View(ny)
+west <- tail(west, -800)
+
+west <- west[!apply(west == "", 1, all),]
+west <- west[!(west$west=="Body"),]
+west <- west[!(west$west=="Link to Image"),]
+west <- west[!(west$west==" "),]
+west <- west[!(west$west=="  "),]
+west <- west[!(west$west=="   "),]
+west <- west[!(west$west=="    "),]
+west <- west[!(west$west=="End of Document"),]
+west <- west[!(west$west=="Final Edition"),]
+west <- west[!(west$west=="Page  of "),]
+west <- west[!grepl("Length", west$west),]
+west <- west[!grepl("Highlight", west$west),]
+west <- west[!grepl("Copyright", west$west),]
+west <- west[!grepl("Load-Date", west$west),]
+west <- west[!grepl("Section", west$west),]
+west <- west[!grepl("Byline", west$west),]
+west <- west[!grepl("PM PST", west$west),]
+west <- west[!grepl("AM PST", west$west),]
+west <- west[!grepl("Graphic", west$west),]
+
+west$west <- as.character(west$west)
+
+west <- west %>%
+  unnest_tokens(word, west)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+# View(west)
+
+get_sentiments('afinn') 
+
+get_sentiments('nrc')
+
+get_sentiments('bing')
+
+west_afinn <- west %>%
+  inner_join(get_sentiments("afinn"))
+# View(ny_afinn)
+
+west_nrc <- west %>%
+  inner_join(get_sentiments("nrc"))
+# View(ny_nrc)
+
+west_bing <- west %>%
+  inner_join(get_sentiments("bing"))
+# View(ny_bing)
+
+ggplot(data = west_afinn, 
+       aes(x=value)) +
+  geom_histogram() +
+  ggtitle("West Coast Sentiment Range (Afinn)") +
+  theme_minimal()
+
+ggplot(west_nrc, 
+    aes(x = sentiment)) + 
+    ggtitle("West Coast Sentiment Range (Nrc)") +
+    geom_bar() +
+    theme_minimal()
+
+ggplot(west_bing, 
+    aes(x = sentiment)) + 
+    ggtitle("West Coast Sentiment Range (Bing)") +
+    geom_bar() +
+    theme_minimal()
+
+set.seed(42)
+ggplot(west_afinn[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() +
+  ggtitle("West Coast Sentiment Range (Afinn)") +
+  theme_minimal()
+
+set.seed(42)
+ggplot(west_nrc[1:50,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  ggtitle("West Coast Sentiment Range (Nrc)")+
+  theme_minimal()
+
+set.seed(42)
+ggplot(west_bing[1:50,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  ggtitle("West Coast Sentiment Range (Bing)")+
+  theme_minimal()
+
+
+
 ```
