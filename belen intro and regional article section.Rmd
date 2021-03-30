@@ -1,0 +1,16 @@
+---
+title: "intro"
+output: html_document
+---
+
+## Data Collection and Cleaning
+
+In order to get out data, we used LexusNexus website to find different news articles relating to Data Science. For the purpose of analysis, we decided to break up the data collection by region: North East, Midwest, West Coast, Mid-Atlantic, and the South. We ensured that we got 100 articles from each region, usually picking out one or two states to represent the region.
+
+After downloading the data, we had to convert the files into a workable format. For us, that meant converting the files into .txt files, which made the files much easier to read in. After reading in this information, we quickly realized we needed to clean up much of the file. First, we removed all of the rows that contained the table of contents. Next, we removed any rows that were empty or contained just a space. Lastly, we removed any rows that related to page number or the title or formatting of the article. While we were not able to perfectly clean up the data, we definitely were able to remove a lot of the unnecessary lines.
+
+(for under Regional Article Analysis)
+
+After cleaning up the data for each region, we chose to run independent sentiment analyses on each region. We chose to run AFINN, NRC, and Bing sentiment analyses on each region in order to get the most analysis possible to best understand what is going on in each region.
+
+The results of the AFINN analysis showed a similar spread for all of the regions, which indicates that there is a similar range of strength of positive and negative words being used in the articles. Similarly, for the NRC analysis, many of the same emotions seemed to be expressed in all regions. The main difference, it seems, is that in the West Coast and South, there seems to be more negative words being used than in the other areas. On the other hand, the Midwest and North East seem to be the regions using the most positive words. Finally, the Bing analysis showed some differences among regions. While the Mid-Atlantic, South, and West regions used more negative words than positive (which seems to agree with the NRC analysis), the Midwest seems to use many more positive words than negative. This, again, agrees with the NRC analysis. The Northeast seems to be the most balanced, using similar amounts of positive and negative words.
