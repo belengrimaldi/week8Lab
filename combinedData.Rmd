@@ -514,6 +514,8 @@ total_words <- word_count %>%
 
 region_words <- left_join(word_count, total_words)
 
+# Contains the tf-idf information for all of the regions
+
 region_words <- region_words %>%
   bind_tf_idf(word, region, n)
 
@@ -542,7 +544,7 @@ We also wanted to compare the differences in sentiment between the five regions.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
-# Graph for sentiment by region
+# Graph for sentiment by region, using the most important words for each region
 
 dc_imp_bing <- filter(region_words, region == "Mid-Atlantic", tf_idf > 5.0e-07)
 
