@@ -1,6 +1,6 @@
 ---
 title: "Word Sentiment Analysis for Data Science"
-author: "Belen, Kay, and Amanda"
+author: "Belen Gomez Grimaldi, Kay Mattern, and Amanda Rein"
 date: "3/30/2021"
 output:
   html_document:
@@ -18,17 +18,17 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r, echo=FALSE, message=FALSE}
-install.packages("dplyr")
+#install.packages("dplyr")
 library(dplyr)
-install.packages("DT")
+#install.packages("DT")
 library(DT)
 library(tidyverse)
 library(tidytext)
 library(ggwordcloud)
 library(textdata)
-install.packages("textreadr")
+#install.packages("textreadr")
 library("textreadr")
-install.packages("striprtf")
+#install.packages("striprtf")
 library(striprtf)
 save.image("tidytext.RData")
 
@@ -42,8 +42,17 @@ grep_clean <- function(data, column, listOfStrings) {
 }
 ```
 
+## Introduction
+In order to get our data, we used LexusNexus website to find different news articles relating to Data Science. For the purpose of analysis, we decided to break up the data collection by region: North East, Midwest, West Coast, Mid-Atlantic, and the South. We ensured that we got 100 articles from each region, usually picking out one or two states to represent the region.
+
+After downloading the data, we had to convert the files into a workable format. For us, that meant converting the files into .txt files, which made the files much easier to read in. After reading in this information, we quickly realized we needed to clean up much of the file. First, we removed all of the rows that contained the table of contents. Next, we removed any rows that were empty or contained just a space. Lastly, we removed any rows that related to page number or the title or formatting of the article. While we were not able to perfectly clean up the data, we definitely were able to remove a lot of the unnecessary lines.
 
 ## Regional Articles Sentiment Analysis {.tabset}
+
+After cleaning up the data for each region, we chose to run independent sentiment analyses on each region. We chose to run AFINN, NRC, and Bing sentiment analyses on each region in order to get the most analysis possible to best understand what is going on in each region.
+
+The results of the AFINN analysis showed a similar spread for all of the regions, which indicates that there is a similar range of strength of positive and negative words being used in the articles. Similarly, for the NRC analysis, many of the same emotions seemed to be expressed in all regions. The main difference, it seems, is that in the West Coast and South, there seems to be more negative words being used than in the other areas. On the other hand, the Midwest and North East seem to be the regions using the most positive words. Finally, the Bing analysis showed some differences among regions. While the Mid-Atlantic, South, and West regions used more negative words than positive (which seems to agree with the NRC analysis), the Midwest seems to use many more positive words than negative. This, again, agrees with the NRC analysis. The Northeast seems to be the most balanced, using similar amounts of positive and negative words.
+
 ### Northeast (NY) {.tabset}
 ```{r, echo=FALSE, message=FALSE, results=FALSE}
 # Chunk to clean data
@@ -274,7 +283,7 @@ ggplot(data = il_sentiment_afinn,
         )+
   geom_histogram()+
   ggtitle("Midwest Sentiment Range")+
-  theme_bw() + 
+  theme_minimal() + 
   labs(x = 'Sentiment Value', y = 'Count', title='Midwest Sentiment Range (afinn)') +
   stat_bin(bins=19)
 ```
@@ -291,9 +300,8 @@ ggplot(data = il_sentiment_nrc,
         )+
   geom_bar()+
   ggtitle("Midwest Sentiment Range")+
-  theme_bw() + 
-  labs(x = 'Sentiment', y = 'Count', title='Midwest Sentiment Range') +
-  theme(axis.text.x = element_text(angle = 45, vjust = 0.95, hjust=1))
+  theme_minimal() + 
+  labs(x = 'Sentiment', y = 'Count', title='Midwest Sentiment Range')
 ```
 
 #### Bing
@@ -308,15 +316,9 @@ ggplot(data = il_sentiment_bing,
         )+
   geom_bar()+
   ggtitle("Midwest Sentiment Range")+
-  theme_bw() + 
+  theme_minimal() + 
   labs(x = 'Sentiment', y = 'Count', title='Midwest Sentiment Range') +
   scale_color_manual(values = c('red', 'green'))
-
-ggplot(il_sentiment_bing[1:100,], aes(label = word, size = n, color=sentiment)
-       ) +
-  geom_text_wordcloud() +
-  theme_minimal()
-
 
 ```
 
@@ -518,6 +520,8 @@ region_words <- region_words %>%
 ```
 
 ## Comparison Plots by Word Frequency
+To compare the most frequent words for the articles in each region, we generated bar graphs for each region. On the x-axis, we plotted the tf-idf value for the top words for each region. To choose the top words, we grouped by region and used slice_max() to select the top 15 tf-idf values. As evident in the plot, the most common words were vastly different for each region. These differences in words may indicate the prevalence of data science applications to different industries and issues around the nation. For example, the words "rats", "rat", "trash", and "burrows" are all identified in data science articles in the Mid-Atlantic. This may indicate that data science is being applied to solve rat infestations or trash problems in this area. Overall, this graphic is useful in identifying data science applications and references across the United States.
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
 region_words <- region_words[order(-region_words$tf_idf),]
@@ -532,7 +536,12 @@ region_words %>%
   facet_wrap(~region, ncol = 3, scales = "free") +
   labs(x = "tf-idf", y = NULL, title='Most Common Words by Region') +
   theme_minimal()
-  
+```
+
+We also wanted to compare the differences in sentiment between the five regions. To do so, we generated histograms to show the count of positive and negative words for each region (using Bing sentiment analysis). It's clear that data science articles in the South and West regions have a stronger negative connotation than elsewhere in the US. Additionally, the Midwest is the only region where the count of positive words outnubmbers the count of negative words. Comparing word sentiment can help when identifying the overall view of data science in regions across the country. Based on this graphic, the data science articles being published tend to contain more negative words, however this may be a result of the application of data science to complex and challenging environmental, political and economic issues across the country.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
 # Graph for sentiment by region
 
 dc_imp_bing <- filter(region_words, region == "Mid-Atlantic", tf_idf > 5.0e-07)
@@ -574,3 +583,7 @@ ggplot(bing_regions, aes(x=sentiment, fill=sentiment)) +
 
 ```
 
+## Conclusion
+Our resulting sentiment analysis gave us a lot of insight into how the field of data science is being reported about in different regions of the United States. We were able to draw interesting conclusions from our graphs, for example discovering that the only region with a net positive sentiment on the topic of data science was the Midwest. We also noticed some strange things from our graphs, for example how the comparison plots by word frequency showed us such seemingly-unrelated groups of most common words per region. The majority of the most common words by region were not even directly related to data science, making us question the usefulness of comparison plots by word frequency. 
+
+In terms of next steps, there are many things that could be improved upon from our analysis in order to increase its accuracy. For starters, we only gathered 100 news articles from each region; with more data spanning a longer period of time, we would be able to see how the conversation around data science has evolved over time, as well as have more certainty that we are seeing the whole picture. Along these lines, the analysis would have been more representative if we were careful to select from the major news sources in each place. We may have accidentally captured biases from one or two particular news sources if those were far more represented than others. Additionally, our regions were not very representative; the Northeast only included New York, the West Coast was just California and Oregon, the Midwest was only Illinois, the South only consisted of Florida, and the Mid-Atlantic was just DC. We would have liked to sample from every state in each region, in order to ensure that we were comparing regional sentiment properly. Besides diversifying our data set, we would have liked to create more graphs from different sentiment analyses. We did use the afinn, bing, and nrc lexicons, but there is also a “loughran” lexicon with the get_sentiments function that we could have utilized. If we could have somehow combined the results from all four lexicons into one graph, we would have been able to find far more information in just one place. Regardless of the time limitations that prevented us from going further with this project, we feel that we have successfully completed a sentiment analysis and gained some valuable insight on publications on data science per region in America.
