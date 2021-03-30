@@ -475,8 +475,6 @@ ggplot(dc_bing,
 
 ## Comparing Relative Word Frequencies
 
-=======
->>>>>>> 741833822e290e29fea0257104bd08f4214036af
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 data_prep <- function(x,y,z){
   i <- as_tibble(t(x))
@@ -498,7 +496,6 @@ region <- c("North East","Midwest","South", "West", "Mid-Atlantic")
 
 tf_idf_text <- tibble(region,text=t(tibble(ny_bag,il_bag,fl_bag,west_bag,dc_bag,.name_repair = "universal")))
 
-# class(tf_idf_text)
 
 word_count <- tf_idf_text %>%
   unnest_tokens(word, text) %>%
@@ -514,5 +511,31 @@ region_words <- region_words %>%
   bind_tf_idf(word, region, n)
 
 region_words
+
+northeast_words <- filter(region_words, region == "North East", tf_idf > 5.0e-05)
+
+ne_imp_bing <- northeast_words %>%
+  inner_join(get_sentiments("bing"))
+
+ggplot(ne_imp_bing, 
+    aes(x = sentiment, fill=sentiment)) + 
+    ggtitle("North East Relatively Important Words Sentiment Range") +
+    geom_bar() +
+    theme_minimal() +
+    labs(x = 'Sentiment', y = 'Count') +
+    scale_color_manual(values = c('red', 'green'))
+
+midwest_words <- filter(region_words, region == "Midwest", tf_idf > 5.0e-05)
+
+mw_imp_bing <- midwest_words %>%
+  inner_join(get_sentiments("bing"))
+
+ggplot(mw_imp_bing, 
+    aes(x = sentiment, fill=sentiment)) + 
+    ggtitle("Midwest Relatively Important Words Sentiment Range") +
+    geom_bar() +
+    theme_minimal() +
+    labs(x = 'Sentiment', y = 'Count') +
+    scale_color_manual(values = c('red', 'green'))
 
 ```
