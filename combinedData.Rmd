@@ -275,7 +275,7 @@ ggplot(data = il_sentiment_afinn,
   geom_histogram()+
   ggtitle("Midwest Sentiment Range")+
   theme_bw() + 
-  labs(x = 'Sentiment Value', y = 'Count', title='Illinois Sentiment Range (afinn)') +
+  labs(x = 'Sentiment Value', y = 'Count', title='Midwest Sentiment Range (afinn)') +
   stat_bin(bins=19)
 ```
 
@@ -292,7 +292,7 @@ ggplot(data = il_sentiment_nrc,
   geom_bar()+
   ggtitle("Midwest Sentiment Range")+
   theme_bw() + 
-  labs(x = 'Sentiment', y = 'Count', title='Illinois Sentiment Range') +
+  labs(x = 'Sentiment', y = 'Count', title='Midwest Sentiment Range') +
   theme(axis.text.x = element_text(angle = 45, vjust = 0.95, hjust=1))
 ```
 
@@ -309,7 +309,7 @@ ggplot(data = il_sentiment_bing,
   geom_bar()+
   ggtitle("Midwest Sentiment Range")+
   theme_bw() + 
-  labs(x = 'Sentiment', y = 'Count', title='Illinois Sentiment Range') +
+  labs(x = 'Sentiment', y = 'Count', title='Midwest Sentiment Range') +
   scale_color_manual(values = c('red', 'green'))
 
 ggplot(il_sentiment_bing[1:100,], aes(label = word, size = n, color=sentiment)
@@ -474,17 +474,6 @@ ggplot(dc_bing,
     theme_minimal() +
     labs(x = 'Sentiment', y = 'Count') +
     scale_color_manual(values = c('red', 'green'))
-
-
-
-bing_regions = rbind(dc_bing, florida_bing, il_sentiment_bing, ny_bing, west_bing)
-bing_regions$region = c(replicate(nrow(dc_bing), "Mid-Atlantic"), replicate(nrow(florida_bing), "South"), replicate(nrow(il_sentiment_bing), "Midwest"),
-replicate(nrow(ny_bing), "North East"),
-replicate(nrow(west_bing), "West"))
-
-ggplot(bing_regions, aes(x=sentiment, fill=sentiment)) +
-    geom_bar() +
-    facet_wrap(~region)
 
 ```
 
