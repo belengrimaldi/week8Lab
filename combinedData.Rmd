@@ -108,7 +108,7 @@ ny_bing <- ny %>%
 ggplot(data = ny_afinn, 
        aes(x=value)) +
   geom_histogram() +
-  ggtitle("New York Sentiment Range") +
+  ggtitle("Northeast Sentiment Range") +
   theme_minimal()
 ```
 
@@ -117,7 +117,7 @@ ggplot(data = ny_afinn,
 # Plot the results
 ggplot(ny_nrc, 
     aes(x = sentiment)) + 
-    ggtitle("New York Sentiment Range") +
+    ggtitle("Northeast Sentiment Range") +
     geom_bar() +
     theme_minimal()
 ```
@@ -127,7 +127,7 @@ ggplot(ny_nrc,
 # Plot the results
 ggplot(ny_bing, 
     aes(x = sentiment, fill=sentiment)) + 
-    ggtitle("New York Sentiment Range") +
+    ggtitle("Northeast Sentiment Range") +
     geom_bar() +
     theme_minimal() +
     labs(x = 'Sentiment', y = 'Count') +
@@ -261,13 +261,12 @@ il_counts$word <- as.factor(il_counts$word)
 
 ```
 
-#### Afinn Analysis
+#### AFINN Analysis
 ```{r, echo=FALSE, message=FALSE}
 
 # Sentiment Analysis Chunk
 
 # afinn 
-
 il_sentiment_afinn <- il_counts %>%
   inner_join(get_sentiments("afinn"))
 
@@ -276,7 +275,7 @@ ggplot(data = il_sentiment_afinn,
        aes(x=value)
         )+
   geom_histogram()+
-  ggtitle("Illinois Sentiment Range")+
+  ggtitle("Midwest Sentiment Range")+
   theme_bw() + 
   labs(x = 'Sentiment Value', y = 'Count', title='Illinois Sentiment Range (afinn)') +
   stat_bin(bins=19)
@@ -285,7 +284,6 @@ ggplot(data = il_sentiment_afinn,
 #### NRC Analysis
 ```{r, echo=FALSE, message=FALSE}
 # nrc 
-
 il_sentiment_nrc <- il_counts %>% 
   inner_join(get_sentiments("nrc"))
 
@@ -294,7 +292,7 @@ ggplot(data = il_sentiment_nrc,
        aes(x=sentiment)
         )+
   geom_bar()+
-  ggtitle("Illinois Sentiment Range")+
+  ggtitle("Midwest Sentiment Range")+
   theme_bw() + 
   labs(x = 'Sentiment', y = 'Count', title='Illinois Sentiment Range') +
   theme(axis.text.x = element_text(angle = 45, vjust = 0.95, hjust=1))
@@ -303,7 +301,6 @@ ggplot(data = il_sentiment_nrc,
 #### Bing Analysis
 ```{r, echo=FALSE, message=FALSE}
 # bing
-
 il_sentiment_bing <- il_counts %>% 
   inner_join(get_sentiments("bing"))
 
@@ -312,7 +309,7 @@ ggplot(data = il_sentiment_bing,
        aes(x=sentiment, fill=sentiment)
         )+
   geom_bar()+
-  ggtitle("Illinois Sentiment Range")+
+  ggtitle("Midwest Sentiment Range")+
   theme_bw() + 
   labs(x = 'Sentiment', y = 'Count', title='Illinois Sentiment Range') +
   scale_color_manual(values = c('red', 'green'))
@@ -322,18 +319,33 @@ ggplot(data = il_sentiment_bing,
 ### South (Florida) {.tabset}
 ```{r, echo=FALSE, message=FALSE, result=FALSE}
 
+# Read in Florida data
 florida <- read_lines("FloridaDataScience.txt")
 
 florida <- tibble(florida)
 
+# Clean up the Florida data by excluding rows without relevant info
+florida <- tail(florida, -1177)
+
+grep_list <- list("Length", "Content Type", "Narrowed by", "News", "Highlight", "Copyright", "Load-Date", "Section", "Byline", "PM EDT", "PM EST", "AM EST", "Graphic", "www", "Location by Publication", "Client/Matter", "Search", "See image link", "All Rights Reserved", "MORE DETAILS", "Sources", "Photo")
+
+for (str in grep_list) {
+  florida <- florida[!grepl(str, florida$florida),]
+}
+
+exact_list <- list("", " ", "Body", "Link to Image", "End of Document", "Page of ")
+
+for (str in exact_list) {
+  florida <- florida[!(florida$florida==str),]
+}
+
 florida$florida <- as.character(florida$florida)
 
 clean_fl <- florida
-
 ```
 
 
-``` {r, echo=FALSE, message=FALSE}
+``` {r, echo=FALSE, message=FALSE, result=FALSE}
 florida <- florida %>%
   unnest_tokens(word, florida)%>%
   anti_join(stop_words)%>% 
@@ -357,7 +369,7 @@ florida_bing <- florida %>%
 ggplot(data = florida_afinn, 
        aes(x=value)) +
   geom_histogram() +
-  ggtitle("Florida Sentiment Range") +
+  ggtitle("South Sentiment Range") +
   theme_minimal()
 
 ```
@@ -367,7 +379,7 @@ ggplot(data = florida_afinn,
 
 ggplot(florida_nrc, 
     aes(x = sentiment)) + 
-    ggtitle("Florida Sentiment Range") +
+    ggtitle("South Sentiment Range") +
     geom_bar() +
     theme_minimal()
 
@@ -378,7 +390,82 @@ ggplot(florida_nrc,
 ```{r, echo=FALSE, message=FALSE}
 ggplot(florida_bing, 
     aes(x = sentiment, fill=sentiment)) + 
-    ggtitle("Florida Sentiment Range") +
+    ggtitle("South Sentiment Range") +
+    geom_bar() +
+    theme_minimal() +
+    labs(x = 'Sentiment', y = 'Count') +
+    scale_color_manual(values = c('red', 'green'))
+```
+
+
+### Mid-Atlantic (D.C.) {.tabset}
+```{r, echo=FALSE, message=FALSE}
+dc <- read_lines("DCDataScience.txt")
+
+dc <- tibble(dc)
+
+dc$dc <- as.character(dc$dc)
+
+dc <- tail(dc, -2257)
+
+grep_list <- list("Length", "Content Type", "Narrowed by", "News", "Highlight", "Copyright", "Load-Date", "Section", "Byline", "PM EDT", "PM EST", "AM EST", "Graphic", "www", "Location by Publication", "Client/Matter", "Search", "See image link", "All Rights Reserved", "MORE DETAILS", "Sources", "Photo")
+
+for (str in grep_list) {
+  dc <- dc[!grepl(str, dc$dc),]
+}
+
+exact_list <- list("", " ", "Body", "Link to Image", "End of Document", "Page of ")
+
+for (str in exact_list) {
+  dc <- dc[!(dc$dc==str),]
+}
+
+clean_dc <- dc
+
+```
+
+
+```{r, echo=FALSE, message=FALSE}
+# Sentiment Anaylsis Section for DC
+dc <- dc %>%
+  unnest_tokens(word, dc)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+dc_afinn <- dc %>%
+  inner_join(get_sentiments("afinn"))
+
+dc_nrc <- dc %>%
+  inner_join(get_sentiments("nrc"))
+
+dc_bing <- dc %>%
+  inner_join(get_sentiments("bing"))
+
+```
+
+#### AFINN Analysis
+```{r, echo=FALSE, message=FALSE}
+ggplot(data = dc_afinn, 
+       aes(x=value)) +
+  geom_histogram() +
+  ggtitle("Mid-Atlantic Sentiment Range") +
+  theme_minimal()
+```
+
+#### NRC Analysis
+```{r, echo=FALSE, message=FALSE}
+ggplot(dc_nrc, 
+    aes(x = sentiment)) + 
+    ggtitle("Mid-Atlantic Sentiment Range") +
+    geom_bar() +
+    theme_minimal()
+```
+
+#### Bing Analysis
+```{r, echo=FALSE, message=FALSE}
+ggplot(dc_bing, 
+    aes(x = sentiment)) + 
+    ggtitle("Mid-Atlantic Sentiment Range") +
     geom_bar() +
     theme_minimal() +
     labs(x = 'Sentiment', y = 'Count') +
@@ -387,7 +474,7 @@ ggplot(florida_bing,
 
 ## Comparing Relative Word Frequencies
 
-```{r, echo=FALSE, message=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 data_prep <- function(x,y,z){
   i <- as_tibble(t(x))
   ii <- unite(i,"text",y:z,remove = TRUE,sep = "")
@@ -397,14 +484,16 @@ ny_bag <- data_prep(clean_ny,'V1','V2937')
 
 il_bag <- data_prep(clean_il,'V1','V3913')
 
-fl_bag <- data_prep(clean_fl,'V1','V6372')
+fl_bag <- data_prep(clean_fl,'V1','V3186')
 
 west_bag <- data_prep(clean_west,'V1','V3108')
 
-region <- c("North East","Midwest","South", "West")
+dc_bag <- data_prep(clean_dc,'V1','V819')
+
+region <- c("North East","Midwest","South", "West", "Mid-Atlantic")
 
 
-tf_idf_text <- tibble(region,text=t(tibble(ny_bag,il_bag,fl_bag,west_bag,.name_repair = "universal")))
+tf_idf_text <- tibble(region,text=t(tibble(ny_bag,il_bag,fl_bag,west_bag,dc_bag,.name_repair = "universal")))
 
 # class(tf_idf_text)
 
