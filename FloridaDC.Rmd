@@ -35,7 +35,39 @@ florida <- tibble(florida)
 View(florida)
 
 florida$florida <- as.character(florida$florida)
-
+florida <- tail(florida, -1177)
+florida <- florida[!apply(florida == "", 1, all),]
+florida <- florida[!(florida$florida=="Body"),]
+florida <- florida[!(florida$florida=="Link to Image"),]
+florida <- florida[!(florida$florida==""),]
+florida <- florida[!(florida$florida==" "),]
+florida <- florida[!(florida$florida=="  "),]
+florida <- florida[!(florida$florida=="   "),]
+florida <- florida[!(florida$florida=="    "),]
+florida <- florida[!(florida$florida=="End of Document"),]
+florida <- florida[!(florida$florida=="Final Edition"),]
+florida <- florida[!(florida$florida=="Page  of "),]
+# exclude <- c("Length", "Content Type", "Narrowed by", "News", "Location by Publication", "Client/Matter", "Search", "See image link", "All Rights Reserved", "MORE DETAILS", "Sources", "Photo", "Highlight", "Copyright", "Load-Date", "Section", "Byline", "PM PST", "AM PST", "Graphic")
+florida <- florida[!grepl("Length", florida$florida),]
+florida <- florida[!grepl("Content Type", florida$florida),]
+florida <- florida[!grepl("Narrowed by", florida$florida),]
+florida <- florida[!grepl("News", florida$florida),]
+florida <- florida[!grepl("Location by Publication", florida$florida),]
+florida <- florida[!grepl("Client/Matter", florida$florida),]
+florida <- florida[!grepl("Search", florida$florida),]
+florida <- florida[!grepl("See image link", florida$florida),]
+florida <- florida[!grepl("All Rights Reserved", florida$florida),]
+florida <- florida[!grepl("MORE DETAILS", florida$florida),]
+florida <- florida[!grepl("Sources", florida$florida),]
+florida <- florida[!grepl("Photo", florida$florida),]
+florida <- florida[!grepl("Highlight", florida$florida),]
+florida <- florida[!grepl("Copyright", florida$florida),]
+florida <- florida[!grepl("Load-Date", florida$florida),]
+florida <- florida[!grepl("Section", florida$florida),]
+florida <- florida[!grepl("Byline", florida$florida),]
+florida <- florida[!grepl("PM PST", florida$florida),]
+florida <- florida[!grepl("AM PST", florida$florida),]
+florida <- florida[!grepl("Graphic", florida$florida),]
 View(florida)
 
 florida <- florida %>%
@@ -103,5 +135,111 @@ ggplot(florida_bing[1:50,], aes(label = word, size = n)
        ) +
   geom_text_wordcloud() +
   ggtitle("Florida Sentiment Range (Bing)")+
+  theme_minimal()
+
+
+dc <- read_lines("DCDataScience.txt")
+
+dc <- tibble(dc)
+View(dc)
+
+dc$dc <- as.character(dc$dc)
+dc <- tail(dc, -2257)
+dc <- dc[!apply(dc == "", 1, all),]
+dc <- dc[!(dc$dc=="Body"),]
+dc <- dc[!(dc$dc=="Link to Image"),]
+dc <- dc[!(dc$dc==""),]
+dc <- dc[!(dc$dc==" "),]
+dc <- dc[!(dc$dc=="  "),]
+dc <- dc[!(dc$dc=="   "),]
+dc <- dc[!(dc$dc=="    "),]
+dc <- dc[!(dc$dc=="End of Document"),]
+dc <- dc[!(dc$dc=="Final Edition"),]
+dc <- dc[!(dc$dc=="Page  of "),]
+dc <- dc[!grepl("Length", dc$dc),]
+dc <- dc[!grepl("Content Type", dc$dc),]
+dc <- dc[!grepl("Narrowed by", dc$dc),]
+dc <- dc[!grepl("News", dc$dc),]
+dc <- dc[!grepl("Location by Publication", dc$dc),]
+dc <- dc[!grepl("Client/Matter", dc$dc),]
+dc <- dc[!grepl("Search", dc$dc),]
+dc <- dc[!grepl("See image link", dc$dc),]
+dc <- dc[!grepl("All Rights Reserved", dc$dc),]
+dc <- dc[!grepl("MORE DETAILS", dc$dc),]
+dc <- dc[!grepl("Highlight", dc$dc),]
+dc <- dc[!grepl("Copyright", dc$dc),]
+dc <- dc[!grepl("Load-Date", dc$dc),]
+dc <- dc[!grepl("Section", dc$dc),]
+dc <- dc[!grepl("Byline", dc$dc),]
+dc <- dc[!grepl("PM PST", dc$dc),]
+dc <- dc[!grepl("AM PST", dc$dc),]
+dc <- dc[!grepl("Graphic", dc$dc),]
+View(dc)
+
+dc <- dc %>%
+  unnest_tokens(word, dc)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+View(dc)
+
+#get_sentiments('afinn') 
+
+#get_sentiments('nrc')
+
+#get_sentiments('bing')
+
+dc_afinn <- dc %>%
+  inner_join(get_sentiments("afinn"))
+View(dc_afinn)
+
+dc_nrc <- dc %>%
+  inner_join(get_sentiments("nrc"))
+View(dc_nrc)
+
+dc_bing <- dc %>%
+  inner_join(get_sentiments("bing"))
+View(dc_bing)
+
+table(dc_afinn$value)
+table(dc_nrc$sentiment)
+table(dc_bing$sentiment)
+
+ggplot(data = dc_afinn, 
+       aes(x=value)) +
+  geom_histogram() +
+  ggtitle("DC Sentiment Range (Afinn)") +
+  theme_minimal()
+
+ggplot(dc_nrc, 
+    aes(x = sentiment)) + 
+    ggtitle("DC Sentiment Range (Nrc)") +
+    geom_bar() +
+    theme_minimal()
+
+ggplot(dc_bing, 
+    aes(x = sentiment)) + 
+    ggtitle("DC Sentiment Range (Bing)") +
+    geom_bar() +
+    theme_minimal()
+
+set.seed(42)
+ggplot(dc_afinn[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() +
+  ggtitle("DC Sentiment Range (Afinn)") +
+  theme_minimal()
+
+set.seed(42)
+ggplot(dc_nrc[1:50,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  ggtitle("DC Sentiment Range (Nrc)")+
+  theme_minimal()
+
+set.seed(42)
+ggplot(dc_bing[1:50,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  ggtitle("DC Sentiment Range (Bing)")+
   theme_minimal()
 ```
