@@ -66,7 +66,7 @@ ny <- ny[!grepl("www", ny$ny),]
 
 # Save the cleaned data for a tf-idf analysis later
 cleaned_ny <- ny
-cleaned_ny$ny <- as.character(cleaned_ny$ny)
+
 
 ny$ny <- as.character(ny$ny)
 
