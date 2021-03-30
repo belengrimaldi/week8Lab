@@ -425,6 +425,7 @@ clean_dc <- dc
 ```
 
 
+<<<<<<< HEAD
 ```{r, echo=FALSE, message=FALSE}
 # Sentiment Anaylsis Section for DC
 dc <- dc %>%
@@ -474,6 +475,8 @@ ggplot(dc_bing,
 
 ## Comparing Relative Word Frequencies
 
+=======
+>>>>>>> 741833822e290e29fea0257104bd08f4214036af
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 data_prep <- function(x,y,z){
   i <- as_tibble(t(x))
