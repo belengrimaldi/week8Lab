@@ -1,7 +1,7 @@
 ---
-title: "Word Sentiment -- Belen"
-author: "Belen Gomez Grimaldi"
-date: "3/28/2021"
+title: "Word Sentiment Analysis for Data Science"
+author: "Belen, Kay, and Amanda"
+date: "3/30/2021"
 output:
   html_document:
     toc: TRUE
@@ -25,8 +25,6 @@ library(DT)
 library(tidyverse)
 library(tidytext)
 library(ggwordcloud)
-install.packages("gutenbergr") 
-library(gutenbergr)
 library(textdata)
 install.packages("textreadr")
 library("textreadr")
@@ -46,7 +44,7 @@ grep_clean <- function(data, column, listOfStrings) {
 
 
 ## Regional Articles Sentiment Analysis {.tabset}
-### Northeast (New York) {.tabset}
+### Northeast (NY) {.tabset}
 ```{r, echo=FALSE, message=FALSE, results=FALSE}
 # Chunk to clean data
 
@@ -136,7 +134,7 @@ ggplot(ny_bing,
 ```
 
 
-### West Coast (California and Oregon) {.tabset}
+### West Coast (CA & OR) {.tabset}
 ```{r, echo=FALSE, message=FALSE, results=FALSE}
 # Chunk for cleaning data
 
@@ -219,7 +217,7 @@ ggplot(west_bing,
     scale_color_manual(values = c('red', 'green'))
 ```
 
-### Midwest (Illinois) {.tabset}
+### Midwest (IL) {.tabset}
 
 ```{r, echo=FALSE, message=FALSE, results=FALSE}
 
@@ -322,7 +320,7 @@ ggplot(il_sentiment_bing[1:100,], aes(label = word, size = n, color=sentiment)
 
 ```
 
-### South (Florida) {.tabset}
+### South (FL) {.tabset}
 ```{r, echo=FALSE, message=FALSE, result=FALSE}
 
 # Read in Florida data
@@ -431,7 +429,6 @@ clean_dc <- dc
 ```
 
 
-<<<<<<< HEAD
 ```{r, echo=FALSE, message=FALSE}
 # Sentiment Anaylsis Section for DC
 dc <- dc %>%
@@ -491,9 +488,10 @@ ggplot(bing_regions, aes(x=sentiment, fill=sentiment)) +
 
 ```
 
-## Comparing Relative Word Frequencies
-
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+#tf_idf for all of the articles
+
 data_prep <- function(x,y,z){
   i <- as_tibble(t(x))
   ii <- unite(i,"text",y:z,remove = TRUE,sep = "")
@@ -528,38 +526,10 @@ region_words <- left_join(word_count, total_words)
 region_words <- region_words %>%
   bind_tf_idf(word, region, n)
 
-region_words
-
-northeast_words <- filter(region_words, region == "North East", tf_idf > 5.0e-05)
-
-ne_imp_bing <- northeast_words %>%
-  inner_join(get_sentiments("bing"))
-
-ggplot(ne_imp_bing, 
-    aes(x = sentiment, fill=sentiment)) + 
-    ggtitle("North East Relatively Important Words Sentiment Range") +
-    geom_bar() +
-    theme_minimal() +
-    labs(x = 'Sentiment', y = 'Count') +
-    scale_color_manual(values = c('red', 'green'))
-
-midwest_words <- filter(region_words, region == "Midwest", tf_idf > 5.0e-05)
-
-mw_imp_bing <- midwest_words %>%
-  inner_join(get_sentiments("bing"))
-
-ggplot(mw_imp_bing, 
-    aes(x = sentiment, fill=sentiment)) + 
-    ggtitle("Midwest Relatively Important Words Sentiment Range") +
-    geom_bar() +
-    theme_minimal() +
-    labs(x = 'Sentiment', y = 'Count') +
-    scale_color_manual(values = c('red', 'green'))
-
 ```
 
-## Comparison Plots
-```{r}
+## Comparison Plots by Word Frequency
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
 region_words <- region_words[order(-region_words$tf_idf),]
 
@@ -575,10 +545,41 @@ region_words %>%
   theme_minimal()
   
 # Graph for sentiment by region
-bing_regions = rbind(dc_bing, florida_bing, il_sentiment_bing, ny_bing, west_bing)
-bing_regions$region = c(replicate(nrow(dc_bing), "Mid-Atlantic"), replicate(nrow(florida_bing), "South"), replicate(nrow(il_sentiment_bing), "Midwest"),
-replicate(nrow(ny_bing), "North East"),
-replicate(nrow(west_bing), "West"))
+
+dc_imp_bing <- filter(region_words, region == "Mid-Atlantic", tf_idf > 5.0e-07)
+
+dc_imp_bing <- dc_imp_bing %>%
+  inner_join(get_sentiments("bing"))
+
+fl_imp_bing <- filter(region_words, region == "South", tf_idf > 5.0e-07)
+
+fl_imp_bing <- fl_imp_bing %>%
+  inner_join(get_sentiments("bing"))
+
+il_imp_bing <- filter(region_words, region == "Midwest", tf_idf > 5.e-07)
+
+il_imp_bing <- il_imp_bing %>%
+  inner_join(get_sentiments("bing"))
+
+ny_imp_bing <- filter(region_words, region == "North East", tf_idf > 5.e-07)
+
+ny_imp_bing <- ny_imp_bing %>%
+  inner_join(get_sentiments("bing"))
+
+west_imp_bing <- filter(region_words, region == "West", tf_idf > 5.e-07)
+
+west_imp_bing <- west_imp_bing %>%
+  inner_join(get_sentiments("bing"))
+
+# bing_regions = rbind(dc_bing, florida_bing, il_sentiment_bing, ny_bing, west_bing)
+# bing_regions$region = c(replicate(nrow(dc_bing), "Mid-Atlantic"), replicate(nrow(florida_bing), "South"), replicate(nrow(il_sentiment_bing), "Midwest"),
+# replicate(nrow(ny_bing), "North East"),
+# replicate(nrow(west_bing), "West"))
+
+bing_regions = rbind(dc_imp_bing, fl_imp_bing, il_imp_bing, ny_imp_bing, west_imp_bing)
+bing_regions$region = c(replicate(nrow(dc_imp_bing), "Mid-Atlantic"), replicate(nrow(fl_imp_bing), "South"), replicate(nrow(il_imp_bing), "Midwest"),
+replicate(nrow(ny_imp_bing), "North East"),
+replicate(nrow(west_imp_bing), "West"))
 
 ggplot(bing_regions, aes(x=sentiment, fill=sentiment)) +
     geom_bar() +
@@ -586,18 +587,6 @@ ggplot(bing_regions, aes(x=sentiment, fill=sentiment)) +
     labs(x='Sentiment (Bing)', y='Count', title='Sentiment Range (Bing) by Region') +
    theme_minimal() +
    theme(axis.text.x=element_blank())
-
-# Word Cloud by Region... could use editing
-bing_regions %>% 
-  group_by(region) %>% 
-  slice_sample(n = 25) %>% 
-  ungroup() %>% 
-  ggplot(aes(label=word, color=sentiment, size=n)) +
-  geom_text_wordcloud() +
-  facet_wrap(~region) +
-  labs(x = NULL, y = NULL, title='Words and Sentiment by Region') +
-  theme_minimal()
-  
 
 ```
 
