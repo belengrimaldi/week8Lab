@@ -192,7 +192,7 @@ ggplot(data = west_afinn,
   theme_minimal()
 ```
 
-#### NFC
+#### NRC
 ```{r, echo=FALSE, message=FALSE}
 # Plot the results
 
@@ -259,7 +259,7 @@ il_counts$word <- as.factor(il_counts$word)
 
 ```
 
-#### AFINN Analysis
+#### AFINN
 ```{r, echo=FALSE, message=FALSE}
 
 # Sentiment Analysis Chunk
@@ -279,7 +279,7 @@ ggplot(data = il_sentiment_afinn,
   stat_bin(bins=19)
 ```
 
-#### NRC Analysis
+#### NRC
 ```{r, echo=FALSE, message=FALSE}
 # nrc 
 il_sentiment_nrc <- il_counts %>% 
@@ -296,7 +296,7 @@ ggplot(data = il_sentiment_nrc,
   theme(axis.text.x = element_text(angle = 45, vjust = 0.95, hjust=1))
 ```
 
-#### Bing Analysis
+#### Bing
 ```{r, echo=FALSE, message=FALSE}
 # bing
 il_sentiment_bing <- il_counts %>% 
@@ -368,7 +368,7 @@ florida_bing <- florida %>%
 
 ```
 
-#### AFINN Analysis
+#### AFINN
 ```{r, echo=FALSE, message=FALSE}
 ggplot(data = florida_afinn, 
        aes(x=value)) +
@@ -378,7 +378,7 @@ ggplot(data = florida_afinn,
 
 ```
 
-#### NRC Analysis
+#### NRC
 ```{r, echo=FALSE, message=FALSE}
 
 ggplot(florida_nrc, 
@@ -390,7 +390,7 @@ ggplot(florida_nrc,
 
 ```
 
-#### Bing Analysis
+#### Bing
 ```{r, echo=FALSE, message=FALSE}
 ggplot(florida_bing, 
     aes(x = sentiment, fill=sentiment)) + 
@@ -447,7 +447,7 @@ dc_bing <- dc %>%
 
 ```
 
-#### AFINN Analysis
+#### AFINN
 ```{r, echo=FALSE, message=FALSE}
 ggplot(data = dc_afinn, 
        aes(x=value)) +
@@ -456,7 +456,7 @@ ggplot(data = dc_afinn,
   theme_minimal()
 ```
 
-#### NRC Analysis
+#### NRC
 ```{r, echo=FALSE, message=FALSE}
 ggplot(dc_nrc, 
     aes(x = sentiment)) + 
@@ -465,7 +465,7 @@ ggplot(dc_nrc,
     theme_minimal()
 ```
 
-#### Bing Analysis
+#### Bing
 ```{r, echo=FALSE, message=FALSE}
 ggplot(dc_bing, 
     aes(x = sentiment, fill=sentiment)) + 
@@ -570,11 +570,6 @@ west_imp_bing <- filter(region_words, region == "West", tf_idf > 5.e-07)
 
 west_imp_bing <- west_imp_bing %>%
   inner_join(get_sentiments("bing"))
-
-# bing_regions = rbind(dc_bing, florida_bing, il_sentiment_bing, ny_bing, west_bing)
-# bing_regions$region = c(replicate(nrow(dc_bing), "Mid-Atlantic"), replicate(nrow(florida_bing), "South"), replicate(nrow(il_sentiment_bing), "Midwest"),
-# replicate(nrow(ny_bing), "North East"),
-# replicate(nrow(west_bing), "West"))
 
 bing_regions = rbind(dc_imp_bing, fl_imp_bing, il_imp_bing, ny_imp_bing, west_imp_bing)
 bing_regions$region = c(replicate(nrow(dc_imp_bing), "Mid-Atlantic"), replicate(nrow(fl_imp_bing), "South"), replicate(nrow(il_imp_bing), "Midwest"),
