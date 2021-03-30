@@ -505,21 +505,13 @@ word_count <- tf_idf_text %>%
   unnest_tokens(word, text) %>%
   count(region, word, sort = TRUE)
 
-
-
 total_words <- word_count %>% 
   group_by(region) %>% 
   summarize(total = sum(n))
 
 region_words <- left_join(word_count, total_words)
 
-View(region_words)
-
 region_words <- region_words %>%
   bind_tf_idf(word, region, n)
-
-View(region_words)
-
-
 
 ```
